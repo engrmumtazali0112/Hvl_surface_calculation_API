@@ -624,7 +624,7 @@ git push origin feature/amazing-improvement
 **Mumtaz Ali**
 
 [![GitHub](https://img.shields.io/badge/GitHub-engrmumtazali0112-181717?style=for-the-badge&logo=github)](https://github.com/engrmumtazali0112?tab=repositories)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&logo=linkedin)](https://linkedin.com/in/mumtazali)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/mumtazali12/)
 [![Azure DevOps](https://img.shields.io/badge/Azure%20DevOps-Virevo-0078D7?style=for-the-badge&logo=azuredevops)](https://dev.azure.com/Virevo/HVL_Cost_estimation)
 
 *Built with ❤️ at the intersection of AI and industrial ERP automation.*
