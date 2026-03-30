@@ -1,0 +1,37 @@
+# ============================================================
+# HVL Surface API & Extractor - Complete Dependencies
+# Task 2014 & Task 2047
+# ============================================================
+# Install with: python -m pip install -r requirements.txt
+
+# ── Web Framework ─────────────────────────────────────────────────────────────
+fastapi>=0.110.0
+uvicorn[standard]>=0.29.0
+python-multipart>=0.0.9
+
+# ── Database ──────────────────────────────────────────────────────────────────
+pyodbc>=5.1.0
+python-dotenv>=1.0.0
+
+# ── PDF Processing ───────────────────────────────────────────────────────────
+pymupdf>=1.23.0          # PDF reading and page rasterization (imports as 'fitz')
+pdfplumber>=0.11.0       # Alternative PDF text extraction
+pypdf>=4.0.0             # Another PDF text extraction library
+
+# ── Email Processing ─────────────────────────────────────────────────────────
+extract-msg>=0.52.0      # Outlook .msg file parsing
+
+# ── Report Generation ────────────────────────────────────────────────────────
+reportlab>=4.0.0         # PDF report generation
+openpyxl>=3.1.0          # Excel summary output
+
+# ── Data Validation ──────────────────────────────────────────────────────────
+pydantic>=2.7.0
+
+# ============================================================
+# Optional AI Backends (Uncomment if needed)
+# ============================================================
+# anthropic>=0.25.0       # Claude vision API
+# openai>=1.30.0          # GPT-4o vision API
+# google-generativeai>=0.5.0  # Gemini vision API
+# pillow>=10.0.0          # Required for Gemini backend

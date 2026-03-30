@@ -1,0 +1,63 @@
+[tool.poetry]
+name = "hvl-surface"
+version = "1.0.0"
+description = "Task 2014 — Automatic painting surface area extraction from technical drawings and emails"
+authors = ["Virevo <info@virevo.com>"]
+readme = "README.md"
+packages = []
+
+[tool.poetry.dependencies]
+python = ">=3.11,<4.0"
+
+# ── Core — always required ────────────────────────────────────────────────────
+pymupdf   = ">=1.23"      # PDF reading + page rasterisation  (imports as 'fitz')
+reportlab = ">=4.0"       # PDF report generation
+openpyxl  = ">=3.1"       # Excel summary output
+
+# ── AI backends — optional, install only what you use ────────────────────────
+anthropic           = { version = ">=0.25", optional = true }   # Claude vision
+openai              = { version = ">=1.30", optional = true }   # GPT-4o vision
+google-generativeai = { version = ">=0.5",  optional = true }   # Gemini vision
+pillow              = { version = ">=10.0", optional = true }   # Required by Gemini
+uvicorn = "^0.42.0"
+fastapi = "^0.135.2"
+
+[tool.poetry.extras]
+claude = ["anthropic"]
+openai = ["openai"]
+gemini = ["google-generativeai", "pillow"]
+all    = ["anthropic", "openai", "google-generativeai", "pillow"]
+
+[tool.poetry.group.dev.dependencies]
+pytest       = ">=8.0"
+pytest-cov   = ">=5.0"
+ruff         = ">=0.4"    # linter + formatter (replaces flake8 + black)
+mypy         = ">=1.10"
+
+[tool.poetry.scripts]
+hvl-batch     = "hvl_batch:main"
+hvl-extractor = "hvl_extractor:main"
+
+[build-system]
+requires      = ["poetry-core>=1.9"]
+build-backend = "poetry.core.masonry.api"
+
+# ── Ruff (linter/formatter) config ───────────────────────────────────────────
+[tool.ruff]
+line-length    = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]   # pycodestyle + pyflakes + isort
+ignore = ["E501"]                # line-too-long handled by formatter
+
+# ── Mypy config ───────────────────────────────────────────────────────────────
+[tool.mypy]
+python_version         = "3.11"
+ignore_missing_imports = true
+warn_unused_ignores    = true
+
+# ── Pytest config ─────────────────────────────────────────────────────────────
+[tool.pytest.ini_options]
+testpaths    = ["tests"]
+addopts      = "-v --tb=short"
