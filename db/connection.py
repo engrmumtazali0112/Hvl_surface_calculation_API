@@ -1,15 +1,12 @@
 """
-db/connection.py — SQL Server connection helpers
+db/connection.py — SQL Server connection helpers.
 """
 import logging
 import pyodbc
-from typing import Optional
+from typing import List, Dict, Any
 
 logger = logging.getLogger("db.connection")
 
-# ---------------------------------------------------------------------------
-# Driver resolution
-# ---------------------------------------------------------------------------
 _PREFERRED_DRIVERS = [
     "ODBC Driver 18 for SQL Server",
     "ODBC Driver 17 for SQL Server",
@@ -23,44 +20,29 @@ def _get_driver() -> str:
     for d in _PREFERRED_DRIVERS:
         if d in available:
             return d
-    raise RuntimeError(f"No usable SQL Server ODBC driver found. Available: {available}")
+    raise RuntimeError(f"No SQL Server ODBC driver found. Available: {available}")
 
-
-# ---------------------------------------------------------------------------
-# Public helpers
-# ---------------------------------------------------------------------------
 
 def build_connection_string(
-    server: str,
-    port: int,
-    database: str,
-    user: str,
-    password: str,
-    timeout: int = 60,
+    server: str, port: int, database: str,
+    user: str, password: str, timeout: int = 60,
 ) -> str:
     driver = _get_driver()
-    # Use curly-brace quoting for server+port (handles special chars in hostnames)
     return (
         f"DRIVER={{{driver}}};"
         f"SERVER={{{server},{port}}};"
         f"DATABASE={database};"
-        f"UID={user};"
-        f"PWD={password};"
+        f"UID={user};PWD={password};"
         f"Connection Timeout={timeout};"
-        f"TrustServerCertificate=yes;"
-        f"Encrypt=yes;"
+        f"TrustServerCertificate=yes;Encrypt=yes;"
     )
 
 
 def get_connection(
-    server: str,
-    port: int,
-    database: str,
-    user: str,
-    password: str,
-    timeout: int = 60,
+    server: str, port: int, database: str,
+    user: str, password: str, timeout: int = 60,
 ) -> pyodbc.Connection:
-    cs = build_connection_string(server, port, database, user, password, timeout)
+    cs   = build_connection_string(server, port, database, user, password, timeout)
     logger.info(f"Connecting to SQL Server: {server},{port}/{database}")
     conn = pyodbc.connect(cs, timeout=timeout)
     conn.autocommit = False
@@ -68,34 +50,32 @@ def get_connection(
     return conn
 
 
-def execute_query(conn: pyodbc.Connection, sql: str, params: tuple = ()):
-    """Execute a query and return all rows as a list of dicts."""
+def execute_query(
+    conn: pyodbc.Connection, sql: str, params: tuple = ()
+) -> List[Dict[str, Any]]:
+    """Execute a SELECT and return rows as list-of-dicts."""
     cursor = conn.cursor()
     try:
         cursor.execute(sql, params)
         cols = [d[0] for d in cursor.description] if cursor.description else []
-        rows = cursor.fetchall()
-        return [dict(zip(cols, row)) for row in rows]
+        return [dict(zip(cols, row)) for row in cursor.fetchall()]
     except Exception as e:
-        logger.error(f"Execute error: {e}")
-        logger.error(f"SQL: {sql.strip()}")
-        logger.error(f"Params: {params}")
+        logger.error(f"Query error: {e}\nSQL: {sql.strip()}\nParams: {params}")
         raise
     finally:
         cursor.close()
 
 
-def execute_non_query(conn: pyodbc.Connection, sql: str, params: tuple = ()):
+def execute_non_query(
+    conn: pyodbc.Connection, sql: str, params: tuple = ()
+) -> int:
     """Execute INSERT/UPDATE/DELETE and return rowcount."""
     cursor = conn.cursor()
     try:
         cursor.execute(sql, params)
-        rc = cursor.rowcount
-        return rc
+        return cursor.rowcount
     except Exception as e:
-        logger.error(f"Execute error: {e}")
-        logger.error(f"SQL: {sql.strip()}")
-        logger.error(f"Params: {params}")
+        logger.error(f"Non-query error: {e}\nSQL: {sql.strip()}\nParams: {params}")
         raise
     finally:
         cursor.close()

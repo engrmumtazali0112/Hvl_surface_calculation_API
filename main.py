@@ -2,7 +2,7 @@
 main.py — HVL Surface API entry point.
 
 Start with:
-  python -m uvicorn main:app --reload --port 8000
+    uvicorn main:app --reload --port 8000
 """
 import logging
 import sys
@@ -19,7 +19,7 @@ from api.routes import router
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S,%f"[:-3],
+    datefmt="%Y-%m-%d %H:%M:%S",
     handlers=[logging.StreamHandler(sys.stdout)],
 )
 logger = logging.getLogger("main")
@@ -30,10 +30,11 @@ logger = logging.getLogger("main")
 app = FastAPI(
     title="HVL Surface API",
     description=(
-        "Processes ZIP files containing PDFs and email documents, "
-        "extracts structured data, and persists it to the company database."
+        "Processes a ZIP file containing PDFs and email documents, "
+        "extracts structured painting data, and persists it to the company database. "
+        "ONE ZIP = ONE Order with all extracted items as OrderRows."
     ),
-    version="2.0.0",
+    version="3.0.0",
 )
 
 app.add_middleware(
@@ -48,7 +49,7 @@ app.include_router(router)
 
 
 # ---------------------------------------------------------------------------
-# Startup / shutdown events
+# Startup / shutdown
 # ---------------------------------------------------------------------------
 
 @app.on_event("startup")
@@ -57,22 +58,20 @@ async def startup():
     logger.info("HVL Surface API starting up…")
     logger.info(f"Database engine: SQL Server ({cfg.db_server},{cfg.db_port})")
 
-    # Test connection to the first Login DB
     try:
-        from db.connection import get_connection, execute_query
-        test_db = cfg.login_dbs[0]
-        conn = get_connection(
+        from db.connection import execute_query, get_connection
+        test_db = cfg.login_dbs[0]           # e.g. "Login-dev"
+        conn    = get_connection(
             cfg.db_server, cfg.db_port, test_db,
             cfg.db_user, cfg.db_password, cfg.connection_timeout,
         )
-        execute_query(conn, "SELECT DB_NAME()")
-        rows = execute_query(conn, "SELECT COUNT(*) AS n FROM [dbo].[Companies]")
-        company_count = rows[0]["n"] if rows else "?"
+        rows    = execute_query(conn, "SELECT COUNT(*) AS n FROM [dbo].[Companies]")
+        n       = rows[0]["n"] if rows else "?"
         conn.close()
-        logger.info(f"✓ SQL Server connection successful — {company_count} companies found")
+        logger.info(f"✓ SQL Server OK — {n} companies found in {test_db}")
     except Exception as e:
         logger.error(f"✗ SQL Server connection failed: {e}")
-        logger.warning("API will continue but DB operations may fail. Check connection settings.")
+        logger.warning("API will continue but DB operations may fail.")
 
 
 @app.on_event("shutdown")
