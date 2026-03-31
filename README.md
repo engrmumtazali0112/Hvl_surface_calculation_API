@@ -1,32 +1,4 @@
-<<<<<<< HEAD
 
-# HVL Surface API
-**Task 2014 & 2047 — Automatic extraction and database insertion of surface treatment orders**
-
-Reads a ZIP file containing PDF drawings, `.eml`, and `.msg` emails, extracts all data needed for a painting quotation — article code, RAL colour, finishing, batch size, surface area — and automatically inserts the results into SQL Server.
-
----
-
-## ✨ What It Does
-
-- Accepts a **ZIP file** containing PDFs, `.eml`, and `.msg` files
-- Extracts part info: ItemCode, RAL color, finishing, weight, surface area, customer
-- Inserts / updates records into SQL Server: **Items → Customers → Orders → OrderRows → OrderValues**
-- Generates sequential order numbers: `OFF-HVL-2026-000001`
-- AI extraction (Claude → Gemini → OpenAI) with **regex fallback** for reliability
-
----
-
-## ⚡ Quick Start
-
-```powershell
-pip install -r requirements.txt
-# Add your DB credentials to .env
-python -m uvicorn main:app --reload --port 8000
-```
-
-API docs available at: `http://127.0.0.1:8000/docs`
-=======
 <div align="center">
 
 <!-- Animated Header -->
@@ -820,4 +792,3 @@ git push origin feature/amazing-improvement
 `Python` · `FastAPI` · `Claude AI` · `SQL Server` · `Industrial Automation`
 
 </div>
->>>>>>> 228bcb25672ae0256f3911f8e1a2abf4840228a3
